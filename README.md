@@ -61,6 +61,36 @@
 | :---: | :---: |
 | ![Dropdown Opened](assets/preview_dropdown_opened.png) | ![Dropdown Closed](assets/preview_dropdown_closed.png) |
 
+| **Google Chrome Profile Picker** | **Google Chrome New Tab Page** |
+| :---: | :---: |
+| ![Chrome Profile Picker](assets/preview_chrome_profile_picker.png) | ![Chrome New Tab Page](assets/preview_chrome_new_tab.png) |
+
+---
+
+## 🌐 Google Chrome Integration
+
+The ASCII animal theme suite also supports **Google Chrome**:
+- **Strict Scope Isolation**: Applies **only** to the **Profile Selection** screen (`chrome://profile-picker/`) and the **Home / New Tab Page** (`chrome://new-tab-page/`). External websites (`github.com`, `google.com`, etc.) and internal settings pages remain 100% untouched.
+- **Deep Pitch Black (`#07080c`)**: Backgrounds are forced to deep pitch black with translucent glass profile tiles and shortcut chips.
+- **Top-Right Dropdown Switcher**: Click `[● Koi ▾]` in the top right to hot-swap between any of the 8 species, or press keys `1`–`8`.
+- **Integrated Navigation**: Clean dark-mode `Gmail` and `Images` links blend seamlessly next to the dropdown switcher.
+- **Zero-Privilege Installation**: Patches `resources.pak` cleanly in userspace with non-destructive `bwrap` mounting—no root/sudo privileges needed.
+
+### 🚀 Install on Google Chrome
+
+```bash
+# 1. Build the Chrome bundle
+bun run build:chrome # or bun build src/chrome.ts --format=iife --outfile dist/chrome_ascii.js
+
+# 2. Patch resources.pak
+python3 patch_chrome_pak.py
+
+# 3. Launch Chrome with the patched overlay
+google-chrome-stable --profile-directory="Default"
+# or for Profile Picker:
+google-chrome-stable --profile-picker
+```
+
 ---
 
 ## 🚀 Quick Installation (Universal Cross-Platform)

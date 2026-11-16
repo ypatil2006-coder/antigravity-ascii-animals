@@ -8,6 +8,8 @@
   },
   "scripts": {
     "build": "bun build src/antigravity.ts --format=iife --outfile dist/antigravity_iife.js",
+    "build:chrome": "bun build src/chrome.ts --format=iife --outfile dist/chrome_ascii.js",
+    "patch:chrome": "python3 patch_chrome_pak.py",
     "install:mod": "node install.js",
     "uninstall:mod": "node install.js --uninstall",
     "live": "node daemon.cjs",

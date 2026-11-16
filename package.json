@@ -1,0 +1,40 @@
+{
+  "name": "antigravity-ascii-animals",
+  "version": "1.0.0",
+  "description": "Living procedural ASCII animal backgrounds, top-bar theme dropdown switcher, and persistent startup loading screen for Google Antigravity Desktop on macOS, Windows, and Linux.",
+  "main": "dist/antigravity_iife.js",
+  "bin": {
+    "antigravity-ascii-animals": "./install.js"
+  },
+  "scripts": {
+    "build": "bun build src/antigravity.ts --format=iife --outfile dist/antigravity_iife.js",
+    "install:mod": "node install.js",
+    "uninstall:mod": "node install.js --uninstall",
+    "live": "node daemon.cjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "antigravity",
+    "google-antigravity",
+    "ascii",
+    "ascii-art",
+    "theme",
+    "background",
+    "customization",
+    "electron-theme"
+  ],
+  "author": "Yash",
+  "contributors": [
+    "Stephen (DesignerStephen1) - Original ASCII animals simulation algorithms and assets",
+    "Naveen (Naveen-io)"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DesignerStephen1/ascii-animals"
+  },
+  "devDependencies": {
+    "@electron/asar": "^3.2.11",
+    "typescript": "^5.6.0"
+  }
+}

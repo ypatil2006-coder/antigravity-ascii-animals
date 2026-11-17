@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "ASCII Animals - Living New Tab & Dark Themes",
+  "version": "1.0.0",
+  "description": "Living procedural ASCII animals on Obsidian Black for your New Tab and Google Search with instant theme switching.",
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ASCII Animal Themes"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.google.com/",
+        "https://www.google.com/?*",
+        "https://www.google.com/webhp*"
+      ],
+      "js": ["engine.js", "content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
+}

@@ -69,20 +69,32 @@
 
 ## 🌐 Google Chrome Integration
 
-The ASCII animal theme suite also supports **Google Chrome**:
-- **Strict Scope Isolation**: Applies **only** to the **Profile Selection** screen (`chrome://profile-picker/`) and the **Home / New Tab Page** (`chrome://new-tab-page/`). External websites (`github.com`, `google.com`, etc.) and internal settings pages remain 100% untouched.
-- **Deep Pitch Black (`#07080c`)**: Backgrounds are forced to deep pitch black with translucent glass profile tiles and shortcut chips.
-- **Top-Right Dropdown Switcher**: Click `[● Koi ▾]` in the top right to hot-swap between any of the 8 species, or press keys `1`–`8`.
-- **Integrated Navigation**: Clean dark-mode `Gmail` and `Images` links blend seamlessly next to the dropdown switcher.
-- **Zero-Privilege Installation**: Patches `resources.pak` cleanly in userspace with non-destructive `bwrap` mounting—no root/sudo privileges needed.
+The ASCII animal theme suite supports **Google Chrome, Brave, Edge, and Arc**:
 
-### 🚀 Install on Google Chrome
+### ⚡ Option 1: Chrome Extension (Recommended · 1-Click Setup)
+
+Share and install effortlessly on any machine without touching system files or terminal commands:
+
+1. Download **`antigravity-ascii-animals-chrome.zip`** (or use the [`chrome-extension/`](./chrome-extension/) folder).
+2. Open `chrome://extensions` in your browser.
+3. Enable **Developer mode** in the top-right corner.
+4. Click **Load unpacked** (top-left) and select the `chrome-extension/` folder.
+5. Press <kbd>Ctrl + T</kbd> (or <kbd>Cmd + T</kbd>) to open a New Tab:
+   - Full-screen Obsidian Black (`#07080c`) procedural ASCII animal simulation.
+   - Minimalist search bar with direct URL support & Google search.
+   - Quick glass links to YouTube, GitHub, Gmail, Reddit, X/Twitter, Claude.
+   - Top-right dropdown switcher + hotkeys `1`–`8` + `H` to toggle UI.
+   - Toolbar popup to switch species anytime or toggle dark mode on `google.com`.
+
+### 🛠️ Option 2: Direct Binary PAK Patch (Profile Picker + WebUI)
+
+For local desktop power users who want `chrome://profile-picker/` and internal WebUI pages themed:
 
 ```bash
 # 1. Build the Chrome bundle
-bun run build:chrome # or bun build src/chrome.ts --format=iife --outfile dist/chrome_ascii.js
+bun run build:chrome
 
-# 2. Patch resources.pak
+# 2. Patch resources.pak in userspace
 python3 patch_chrome_pak.py
 
 # 3. Launch Chrome with the patched overlay

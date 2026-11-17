@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASCII Animals Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="header-title">
+        <span class="logo-icon">✦</span>
+        <span>ASCII Animals</span>
+      </div>
+      <span class="active-badge" id="popup-active-badge">Koi</span>
+    </header>
+
+    <div class="section-label">CHOOSE ACTIVE SPECIES</div>
+    <div class="species-grid" id="popup-species-grid"></div>
+
+    <div class="divider"></div>
+
+    <div class="options-group">
+      <label class="toggle-option">
+        <input type="checkbox" id="google-theme-toggle" checked>
+        <span class="toggle-label">
+          <span class="opt-title">Apply to Google Homepage</span>
+          <span class="opt-desc">Obsidian dark mode + swimming creatures on google.com</span>
+        </span>
+      </label>
+    </div>
+
+    <footer class="popup-footer">
+      <button id="open-newtab-btn" class="action-btn" type="button">
+        <span>Open New Tab</span>
+        <span class="btn-arrow">↗</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

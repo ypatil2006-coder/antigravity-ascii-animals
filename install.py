@@ -87,7 +87,48 @@ def get_preload_injection(user_data_dir):
         const path = require("path");
         const THEME_FILE = "{theme_file}";
 
-        // 1. Instant theme persistence on species change
+        // 1. Instant native theme styles injected at document-start before any paint
+        const injectNativeCSS = function() {{
+            try {{
+                if (document.getElementById("agy-native-core-style")) return;
+                const target = document.head || document.documentElement;
+                if (!target) return;
+                const style = document.createElement("style");
+                style.id = "agy-native-core-style";
+                style.textContent = `
+                    html, body, #root, #workbench\\\\.main\\\\.container, .monaco-workbench {{
+                        background-color: #07080c !important;
+                        background: #07080c !important;
+                    }}
+                    :root, html, body, .theme-standalone, .dark, .theme-dark {{
+                        --background: transparent !important;
+                        --color-background: transparent !important;
+                        --sidebar: transparent !important;
+                        --color-sidebar: transparent !important;
+                        --card: rgba(16, 18, 28, 0.45) !important;
+                        --color-card: rgba(16, 18, 28, 0.45) !important;
+                        --card-border: rgba(255, 255, 255, 0.12) !important;
+                        --color-card-border: rgba(255, 255, 255, 0.12) !important;
+                        --shell: transparent !important;
+                        --content: transparent !important;
+                        --onyx-frame: rgba(14, 16, 24, 0.38) !important;
+                        --onyx-raised: rgba(18, 20, 32, 0.50) !important;
+                        --border: rgba(255, 255, 255, 0.10) !important;
+                    }}
+                    html, body, #root, #root > div, .agy-shell, .agy-sheet {{
+                        background-color: transparent !important;
+                        background: transparent !important;
+                    }}
+                    body {{
+                        background-color: #07080c !important;
+                    }}
+                `;
+                target.appendChild(style);
+            }} catch (_) {{}}
+        }};
+        injectNativeCSS();
+
+        // 2. Instant theme persistence on species change
         window.addEventListener("agy-animal-changed", function(e) {{
             try {{
                 if (e && e.detail && e.detail.animal) {{
@@ -98,11 +139,12 @@ def get_preload_injection(user_data_dir):
             }} catch (_) {{}}
         }});
 
-        // 2. Preload script injection so the main window starts the ASCII animals immediately
+        // 3. Preload script injection so the main window starts the ASCII animals immediately
         const injectAscii = function() {{
             try {{
+                injectNativeCSS();
                 if (!document.head || !document.body) {{
-                    setTimeout(injectAscii, 40);
+                    setTimeout(injectAscii, 20);
                     return;
                 }}
                 if (window.__antigravityBg || document.getElementById("agy-anim-canvas")) {{
@@ -134,10 +176,9 @@ def get_preload_injection(user_data_dir):
             }} catch (_) {{}}
         }};
 
+        injectAscii();
         if (document.readyState === "loading") {{
             document.addEventListener("DOMContentLoaded", injectAscii);
-        }} else {{
-            injectAscii();
         }}
     }} catch (_) {{}}
 }})();

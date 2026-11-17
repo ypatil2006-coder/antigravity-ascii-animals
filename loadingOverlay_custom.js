@@ -91,88 +91,53 @@ function getLoadingHtml() {
     z-index: 0 !important;
     pointer-events: none !important;
   }
-  .loading-card {
+  .loader-center {
     position: relative !important;
     z-index: 10 !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 22px 34px !important;
-    background: rgba(10, 12, 18, 0.75) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 18px !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-    animation: cardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    pointer-events: none !important;
   }
   .loader-dots {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
+    display: flex !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
   }
   .loader-dots div {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
     background-color: ${accentColor} !important;
     box-shadow: 0 0 12px ${accentColor} !important;
-    opacity: 0.3;
-    animation: dotPulse 1.4s infinite ease-in-out;
+    opacity: 0.35;
+    animation: dotPulse 1.4s infinite ease-in-out !important;
   }
   .loader-dots div:nth-child(1) { animation-delay: 0s; }
   .loader-dots div:nth-child(2) { animation-delay: 0.25s; }
   .loader-dots div:nth-child(3) { animation-delay: 0.5s; }
-  
-  .title-row {
-    font-size: 13.5px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .theme-badge {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid ${accentColor}66;
-    color: ${accentColor};
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    box-shadow: 0 0 12px ${accentColor}22;
-  }
-  .status-text {
-    margin-top: 6px;
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 400;
-    letter-spacing: 0.02em;
+  .loader-text {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.06em !important;
+    color: #ffffff !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 20px rgba(0, 0, 0, 0.8) !important;
+    user-select: none !important;
   }
   @keyframes dotPulse {
     0%, 100% { opacity: 0.25; transform: scale(0.85); }
     50% { opacity: 1; transform: scale(1.2); }
   }
-  @keyframes cardFadeIn {
-    from { opacity: 0; transform: translateY(6px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
 </style>
 </head>
 <body>
   <canvas id="loading-canvas"></canvas>
-  <div class="loading-card">
+  <div class="loader-center">
     <div class="loader-dots">
       <div></div><div></div><div></div>
     </div>
-    <div class="title-row">
-      <span>Antigravity</span>
-      <span class="theme-badge">${animalName}</span>
-    </div>
-    <div class="status-text">Loading workspace...</div>
+    <div class="loader-text">Loading Antigravity</div>
   </div>
   <script>
 ${iifeCode}
@@ -273,16 +238,16 @@ function attachLoadingOverlay(win, foregroundColor, backgroundColor) {
         if (isDismissed) return;
         try {
             if (win.isDestroyed() || win.webContents.isDestroyed()) return;
-            const hasMounted = await win.webContents.executeJavaScript(
-                'Boolean(document.getElementById("root") && document.getElementById("root").children.length > 0)'
+            const isReady = await win.webContents.executeJavaScript(
+                'Boolean(window.__antigravityBg && document.getElementById("agy-anim-canvas"))'
             );
-            if (hasMounted) {
+            if (isReady) {
                 dismissOverlay();
                 return;
             }
         } catch (_) {}
         if (!isDismissed) {
-            setTimeout(checkReady, 80);
+            setTimeout(checkReady, 60);
         }
     };
 

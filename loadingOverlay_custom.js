@@ -167,6 +167,20 @@ ${iifeCode}
  * and only dismisses once React has mounted components into #root.
  */
 function attachLoadingOverlay(win, foregroundColor, backgroundColor) {
+    if (electron_1 && electron_1.ipcMain) {
+        try {
+            electron_1.ipcMain.removeAllListeners("agy:save-theme");
+        } catch (_) {}
+        electron_1.ipcMain.on("agy:save-theme", (_event, animal) => {
+            try {
+                if (animal && typeof animal === "string") {
+                    const themePath = "/home/yash/.config/Antigravity-Profiles/ascii_animal_theme.json";
+                    fs.writeFileSync(themePath, JSON.stringify({ animal: animal, updatedAt: Date.now() }, null, 2));
+                }
+            } catch (_) {}
+        });
+    }
+
     const view = new electron_1.WebContentsView({
         webPreferences: {
             nodeIntegration: false,
@@ -239,7 +253,7 @@ function attachLoadingOverlay(win, foregroundColor, backgroundColor) {
         try {
             if (win.isDestroyed() || win.webContents.isDestroyed()) return;
             const isReady = await win.webContents.executeJavaScript(
-                'Boolean(window.__antigravityBg && document.getElementById("agy-anim-canvas"))'
+                'Boolean(document.getElementById("agy-anim-canvas") || (document.querySelector("#root") && document.querySelector("#root").childElementCount > 0))'
             );
             if (isReady) {
                 dismissOverlay();

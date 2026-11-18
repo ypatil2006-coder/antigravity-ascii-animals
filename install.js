@@ -83,113 +83,94 @@ function findAsarPath(customPath) {
 // ── 2. PRELOAD HOOK CODE ─────────────────────────────────────────────────────
 
 function getPreloadInjection() {
-  const { userDataDir } = getPlatformPaths();
-  const themeFileNormalized = path.join(userDataDir, 'ascii_animal_theme.json').replace(/\\/g, '/');
+  const iifeBundleSrc = path.join(__dirname, "dist", "antigravity_iife.js");
+  let iifeCode = "";
+  if (fs.existsSync(iifeBundleSrc)) {
+    iifeCode = fs.readFileSync(iifeBundleSrc, "utf8");
+  }
+  const iifeCodeJson = JSON.stringify(iifeCode);
 
-  return `
-// === ANTIGRAVITY ASCII ANIMALS THEME INJECTION ===
-(function() {
-    try {
-        const fs = require("fs");
-        const path = require("path");
-        const THEME_FILE = "${themeFileNormalized}";
-
-        // 1. Instant native theme styles injected at document-start before any paint
-        const injectNativeCSS = function() {
-            try {
-                if (document.getElementById("agy-native-core-style")) return;
-                const target = document.head || document.documentElement;
-                if (!target) return;
-                const style = document.createElement("style");
-                style.id = "agy-native-core-style";
-                style.textContent = \`
-                    html, body, #root, #workbench\\\\.main\\\\.container, .monaco-workbench {
-                        background-color: #07080c !important;
-                        background: #07080c !important;
-                    }
-                    :root, html, body, .theme-standalone, .dark, .theme-dark {
-                        --background: transparent !important;
-                        --color-background: transparent !important;
-                        --sidebar: transparent !important;
-                        --color-sidebar: transparent !important;
-                        --card: rgba(16, 18, 28, 0.45) !important;
-                        --color-card: rgba(16, 18, 28, 0.45) !important;
-                        --card-border: rgba(255, 255, 255, 0.12) !important;
-                        --color-card-border: rgba(255, 255, 255, 0.12) !important;
-                        --shell: transparent !important;
-                        --content: transparent !important;
-                        --onyx-frame: rgba(14, 16, 24, 0.38) !important;
-                        --onyx-raised: rgba(18, 20, 32, 0.50) !important;
-                        --border: rgba(255, 255, 255, 0.10) !important;
-                    }
-                    html, body, #root, #root > div, .agy-shell, .agy-sheet {
-                        background-color: transparent !important;
-                        background: transparent !important;
-                    }
-                    body {
-                        background-color: #07080c !important;
-                    }
-                \`;
-                target.appendChild(style);
-            } catch (_) {}
-        };
-        injectNativeCSS();
-
-        // 2. Instant theme persistence on species change
-        window.addEventListener("agy-animal-changed", function(e) {
-            try {
-                if (e && e.detail && e.detail.animal) {
-                    const dir = path.dirname(THEME_FILE);
-                    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-                    fs.writeFileSync(THEME_FILE, JSON.stringify({ animal: e.detail.animal, updatedAt: Date.now() }, null, 2));
-                }
-            } catch (_) {}
-        });
-
-        // 3. Preload script injection so the main window starts the ASCII animals immediately
-        const injectAscii = function() {
-            try {
-                injectNativeCSS();
-                if (!document.head || !document.body) {
-                    setTimeout(injectAscii, 20);
-                    return;
-                }
-                if (window.__antigravityBg || document.getElementById("agy-anim-canvas")) {
-                    return;
-                }
-                const iifePath = path.join(__dirname, "antigravity_iife.js");
-                let code = "";
-                if (fs.existsSync(iifePath)) {
-                    code = fs.readFileSync(iifePath, "utf8");
-                }
-                if (code) {
-                    const s = document.createElement("script");
-                    s.id = "antigravity-ascii-bundle";
-                    s.textContent = code;
-                    document.head.appendChild(s);
-
-                    const initScript = document.createElement("script");
-                    initScript.textContent = \`
-                        (function() {
-                            try {
-                                if (typeof AntigravityBackground !== "undefined" && !window.__antigravityBg) {
-                                    window.__antigravityBg = new AntigravityBackground();
-                                }
-                            } catch(_) {}
-                        })();
-                    \`;
-                    document.head.appendChild(initScript);
-                }
-            } catch (_) {}
-        };
-
-        injectAscii();
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", injectAscii);
-        }
-    } catch (_) {}
-})();
-`;
+  return [
+    "// === ANTIGRAVITY ASCII ANIMALS THEME INJECTION ===",
+    "(function() {",
+    "    try {",
+    "        const injectNativeCSS = function() {",
+    "            try {",
+    "                if (document.getElementById(\"agy-native-core-style\")) return;",
+    "                const target = document.head || document.documentElement;",
+    "                if (!target) return;",
+    "                const style = document.createElement(\"style\");",
+    "                style.id = \"agy-native-core-style\";",
+    "                style.textContent = [",
+    "                    \"html, body, #root, #workbench\\\\.main\\\\.container, .monaco-workbench { background-color: #07080c !important; background: #07080c !important; }\",",
+    "                    \":root, html, body, .theme-standalone, .dark, .theme-dark {\",",
+    "                    \"  --background: transparent !important;\",",
+    "                    \"  --color-background: transparent !important;\",",
+    "                    \"  --sidebar: transparent !important;\",",
+    "                    \"  --color-sidebar: transparent !important;\",",
+    "                    \"  --card: rgba(16, 18, 28, 0.45) !important;\",",
+    "                    \"  --color-card: rgba(16, 18, 28, 0.45) !important;\",",
+    "                    \"  --card-border: rgba(255, 255, 255, 0.12) !important;\",",
+    "                    \"  --color-card-border: rgba(255, 255, 255, 0.12) !important;\",",
+    "                    \"  --shell: transparent !important;\",",
+    "                    \"  --content: transparent !important;\",",
+    "                    \"  --onyx-frame: rgba(14, 16, 24, 0.38) !important;\",",
+    "                    \"  --onyx-raised: rgba(18, 20, 32, 0.50) !important;\",",
+    "                    \"  --border: rgba(255, 255, 255, 0.10) !important;\",",
+    "                    \"}\",",
+    "                    \"html, body, #root, #root > div, .agy-shell, .agy-sheet { background-color: transparent !important; background: transparent !important; }\",",
+    "                    \"body { background-color: #07080c !important; }\"",
+    "                ].join(\"\\n\");",
+    "                target.appendChild(style);",
+    "            } catch (_) {}",
+    "        };",
+    "        injectNativeCSS();",
+    "",
+    "        window.addEventListener(\"agy-animal-changed\", function(e) {",
+    "            try {",
+    "                if (e && e.detail && e.detail.animal) {",
+    "                    if (typeof electron_1 !== \"undefined\" && electron_1.ipcRenderer) {",
+    "                        electron_1.ipcRenderer.send(\"agy:save-theme\", e.detail.animal);",
+    "                    }",
+    "                }",
+    "            } catch (_) {}",
+    "        });",
+    "",
+    "        const injectAscii = function() {",
+    "            try {",
+    "                injectNativeCSS();",
+    "                if (!document.head && !document.documentElement && !document.body) {",
+    "                    setTimeout(injectAscii, 20);",
+    "                    return;",
+    "                }",
+    "                if (window.__antigravityBg || document.getElementById(\"agy-anim-canvas\")) {",
+    "                    return;",
+    "                }",
+    "                const target = document.head || document.documentElement || document.body;",
+    "                if (!target) {",
+    "                    setTimeout(injectAscii, 20);",
+    "                    return;",
+    "                }",
+    "                if (!document.getElementById(\"antigravity-ascii-bundle\")) {",
+    "                    const s = document.createElement(\"script\");",
+    "                    s.id = \"antigravity-ascii-bundle\";",
+    "                    s.textContent = " + iifeCodeJson + ";",
+    "                    target.appendChild(s);",
+    "",
+    "                    const initScript = document.createElement(\"script\");",
+    "                    initScript.textContent = \"(function() { try { if (typeof AntigravityBackground !== \\\"undefined\\\" && !window.__antigravityBg) { window.__antigravityBg = new AntigravityBackground(); } } catch(_) {} })();\";",
+    "                    target.appendChild(initScript);",
+    "                }",
+    "            } catch (_) {}",
+    "        };",
+    "",
+    "        injectAscii();",
+    "        if (document.readyState === \"loading\") {",
+    "            document.addEventListener(\"DOMContentLoaded\", injectAscii);",
+    "        }",
+    "    } catch (_) {}",
+    "})();"
+  ].join("\n");
 }
 
 // ── 3. INSTALLATION ROUTINE ──────────────────────────────────────────────────

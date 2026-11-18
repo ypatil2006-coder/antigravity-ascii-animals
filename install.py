@@ -78,15 +78,12 @@ def find_asar_path(custom_path=None):
     return None
 
 def get_preload_injection(user_data_dir):
-    theme_file = (user_data_dir / "ascii_animal_theme.json").as_posix()
+    iife_code = IIFE_BUNDLE_SRC.read_text(encoding="utf-8") if IIFE_BUNDLE_SRC.exists() else ""
+    iife_code_json = json.dumps(iife_code)
     return f"""
 // === ANTIGRAVITY ASCII ANIMALS THEME INJECTION ===
 (function() {{
     try {{
-        const fs = require("fs");
-        const path = require("path");
-        const THEME_FILE = "{theme_file}";
-
         // 1. Instant native theme styles injected at document-start before any paint
         const injectNativeCSS = function() {{
             try {{
@@ -128,13 +125,13 @@ def get_preload_injection(user_data_dir):
         }};
         injectNativeCSS();
 
-        // 2. Instant theme persistence on species change
+        // 2. Instant theme persistence on species change via IPC to main process
         window.addEventListener("agy-animal-changed", function(e) {{
             try {{
                 if (e && e.detail && e.detail.animal) {{
-                    const dir = path.dirname(THEME_FILE);
-                    if (!fs.existsSync(dir)) fs.mkdirSync(dir, {{ recursive: true }});
-                    fs.writeFileSync(THEME_FILE, JSON.stringify({{ animal: e.detail.animal, updatedAt: Date.now() }}, null, 2));
+                    if (typeof electron_1 !== "undefined" && electron_1.ipcRenderer) {{
+                        electron_1.ipcRenderer.send("agy:save-theme", e.detail.animal);
+                    }}
                 }}
             }} catch (_) {{}}
         }});
@@ -143,23 +140,23 @@ def get_preload_injection(user_data_dir):
         const injectAscii = function() {{
             try {{
                 injectNativeCSS();
-                if (!document.head || !document.body) {{
+                if (!document.head && !document.documentElement && !document.body) {{
                     setTimeout(injectAscii, 20);
                     return;
                 }}
                 if (window.__antigravityBg || document.getElementById("agy-anim-canvas")) {{
                     return;
                 }}
-                const iifePath = path.join(__dirname, "antigravity_iife.js");
-                let code = "";
-                if (fs.existsSync(iifePath)) {{
-                    code = fs.readFileSync(iifePath, "utf8");
+                const target = document.head || document.documentElement || document.body;
+                if (!target) {{
+                    setTimeout(injectAscii, 20);
+                    return;
                 }}
-                if (code) {{
+                if (!document.getElementById("antigravity-ascii-bundle")) {{
                     const s = document.createElement("script");
                     s.id = "antigravity-ascii-bundle";
-                    s.textContent = code;
-                    document.head.appendChild(s);
+                    s.textContent = {iife_code_json};
+                    target.appendChild(s);
 
                     const initScript = document.createElement("script");
                     initScript.textContent = `
@@ -171,7 +168,7 @@ def get_preload_injection(user_data_dir):
                             }} catch(_) {{}}
                         }})();
                     `;
-                    document.head.appendChild(initScript);
+                    target.appendChild(initScript);
                 }}
             }} catch (_) {{}}
         }};
